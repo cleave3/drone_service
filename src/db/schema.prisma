@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLITE does not support enums
+
+// enum DRONEMODEL {
+//   Lightweight
+//   Middleweight
+//   Cruiserweight
+//   Heavyweight
+// }
+
+// enum DRONESTATE {
+//   IDLE
+//   LOADING
+//   LOADED
+//   DELIVERING
+//   DELIVERED
+//   RETURNING
+// }
+
+model Drone {
+  id              Int          @id @default(autoincrement())
+  serialNumber    String       @unique
+  model           String       @default("Middleweight") //DRONEMODEL
+  weightLimit     Int
+  batteryCapacity Int          @default(100)
+  state           String       @default("IDLE") //DRONESTATE
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  items           Medication[]
+}
+
+model Medication {
+  id          Int    @id @default(autoincrement())
+  name        String
+  weight      Int
+  code        String
+  image       String
+  droneSerial String
+  drone       Drone  @relation(fields: [droneSerial], references: [serialNumber])
+}
